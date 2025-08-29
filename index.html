@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频播放器 - show.mp4</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            padding: 20px;
+            color: white;
+        }
+        
+        .container {
+            max-width: 900px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        h1 {
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .player-container {
+            position: relative;
+            width: 100%;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            background: #000;
+        }
+        
+        video {
+            width: 100%;
+            display: block;
+            outline: none;
+        }
+        
+        .controls {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+            padding: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .player-container:hover .controls {
+            opacity: 1;
+        }
+        
+        .btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 0 5px;
+            outline: none;
+        }
+        
+        .play-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .progress-container {
+            flex-grow: 1;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            margin: 0 10px;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .progress {
+            height: 100%;
+            background: #ff4081;
+            border-radius: 4px;
+            width: 0%;
+        }
+        
+        .volume-container {
+            display: flex;
+            align-items: center;
+            margin: 0 10px;
+        }
+        
+        .volume-btn, .fullscreen-btn {
+            font-size: 20px;
+        }
+        
+        .volume-slider {
+            width: 80px;
+            margin-left: 5px;
+        }
+        
+        .time {
+            font-size: 14px;
+            margin: 0 10px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            border: 6px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        .error-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ff4081;
+            text-align: center;
+            display: none;
+        }
+        
+        .instructions {
+            margin-top: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: left;
+            max-width: 600px;
+        }
+        
+        .instructions h2 {
+            margin-bottom: 10px;
+            color: #ffdd40;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+            line-height: 1.6;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        @media (max-width: 600px) {
+            .controls {
+                padding: 10px;
+            }
+            
+            .volume-slider {
+                width: 50px;
+            }
+            
+            .time {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>视频播放演示 - show.mp4</h1>
+        
+        <div class="player-container" id="playerContainer">
+            <video id="videoPlayer">
+                <source src="show.mp4" type="video/mp4">
+                您的浏览器不支持HTML5视频播放
+            </video>
+            
+            <div class="loading" id="loading"></div>
+            
+            <div class="error-message" id="errorMessage">
+                视频加载失败，请检查视频文件路径
+            </div>
+            
+            <div class="controls">
+                <button class="btn play-btn" id="playBtn">▶</button>
+                <span class="time" id="currentTime">0:00</span>
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress" id="progress"></div>
+                </div>
+                <span class="time" id="duration">0:00</span>
+                
+                <div class="volume-container">
+                    <button class="btn volume-btn" id="volumeBtn">🔊</button>
+                    <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.1" value="1">
+                </div>
+                
+                <button class="btn fullscreen-btn" id="fullscreenBtn">⛶</button>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h2>使用说明</h2>
+            <ul>
+                <li>将<code>show.mp4</code>视频文件放在与此HTML文件相同的目录中</li>
+                <li>点击播放按钮或视频画面开始播放</li>
+                <li>拖动进度条可以跳转到视频的特定部分</li>
+                <li>使用音量滑块调整音量大小</li>
+                <li>点击全屏按钮可以全屏观看视频</li>
+                <li>鼠标移动到视频上方显示控制栏</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const video = document.getElementById('videoPlayer');
+            const playBtn = document.getElementById('playBtn');
+            const volumeBtn = document.getElementById('volumeBtn');
+            const volumeSlider = document.getElementById('volumeSlider');
+            const progress = document.getElementById('progress');
+            const progressContainer = document.getElementById('progressContainer');
+            const currentTime = document.getElementById('currentTime');
+            const duration = document.getElementById('duration');
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            const loading = document.getElementById('loading');
+            const errorMessage = document.getElementById('errorMessage');
+            const playerContainer = document.getElementById('playerContainer');
+            
+            // 播放/暂停
+            function togglePlay() {
+                if (video.paused) {
+                    video.play();
+                    playBtn.innerHTML = '❚❚';
+                } else {
+                    video.pause();
+                    playBtn.innerHTML = '▶';
+                }
+            }
+            
+            // 更新进度条
+            function updateProgress() {
+                const percent = (video.currentTime / video.duration) * 100;
+                progress.style.width = `${percent}%`;
+                currentTime.textContent = formatTime(video.currentTime);
+            }
+            
+            // 设置进度
+            function setProgress(e) {
+                const width = this.clientWidth;
+                const clickX = e.offsetX;
+                const percent = clickX / width;
+                video.currentTime = percent * video.duration;
+            }
+            
+            // 设置音量
+            function setVolume() {
+                video.volume = volumeSlider.value;
+                volumeBtn.textContent = volumeSlider.value == 0 ? '🔇' : '🔊';
+            }
+            
+            // 切换全屏
+            function toggleFullscreen() {
+                if (!document.fullscreenElement) {
+                    playerContainer.requestFullscreen().catch(err => {
+                        console.error(`全屏错误: ${err.message}`);
+                    });
+                } else {
+                    document.exitFullscreen();
+                }
+            }
+            
+            // 格式化时间
+            function formatTime(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            }
+            
+            // 视频加载事件
+            video.addEventListener('loadedmetadata', function() {
+                duration.textContent = formatTime(video.duration);
+                loading.style.display = 'none';
+            });
+            
+            video.addEventListener('waiting', function() {
+                loading.style.display = 'block';
+            });
+            
+            video.addEventListener('canplay', function() {
+                loading.style.display = 'none';
+            });
+            
+            video.addEventListener('error', function() {
+                loading.style.display = 'none';
+                errorMessage.style.display = 'block';
+            });
+            
+            // 事件监听
+            playBtn.addEventListener('click', togglePlay);
+            video.addEventListener('click', togglePlay);
+            video.addEventListener('timeupdate', updateProgress);
+            progressContainer.addEventListener('click', setProgress);
+            volumeSlider.addEventListener('input', setVolume);
+            volumeBtn.addEventListener('click', function() {
+                if (video.volume > 0) {
+                    video.volume = 0;
+                    volumeSlider.value = 0;
+                    volumeBtn.textContent = '🔇';
+                } else {
+                    video.volume = 1;
+                    volumeSlider.value = 1;
+                    volumeBtn.textContent = '🔊';
+                }
+            });
+            fullscreenBtn.addEventListener('click', toggleFullscreen);
+            
+            // 初始化音量
+            setVolume();
+        });
+    </script>
+</body>
+</html>
