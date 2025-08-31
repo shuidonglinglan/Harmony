@@ -1,204 +1,153 @@
+
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>禅意视频</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f8f4e9;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .video-container {
-            position: relative;
-            width: 85%;
-            max-width: 900px;
-            padding-top: 48.25%; /* 调整视频比例 */
-            margin: 2rem auto;
-            border-radius: 4px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            background: #000;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .video-container:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
-        }
-        
-        video {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-            outline: none;
-            border-radius: 4px;
-        }
-        
-        .controls {
-            margin: 1.5rem 0;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            opacity: 0.7;
-            transition: opacity 0.3s ease;
-        }
-        
-        .controls:hover {
-            opacity: 1;
-        }
-        
-        button {
-            background: #e8e4d9;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 30px;
-            color: #6a7865;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: inherit;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-        }
-        
-        button:hover {
-            background: #d0d9c7;
-            transform: translateY(-2px);
-        }
-        
-        /* 禅意装饰元素 */
-        .zen-circle {
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            border: 1px solid rgba(166, 176, 149, 0.15);
-            border-radius: 50%;
-            top: -150px;
-            right: -150px;
-            z-index: -1;
-        }
-        
-        .zen-circle-2 {
-            position: absolute;
-            width: 200px;
-            height: 200px;
-            border: 1px solid rgba(166, 176, 149, 0.1);
-            border-radius: 50%;
-            bottom: -100px;
-            left: -100px;
-            z-index: -1;
-        }
-        
-        .zen-line {
-            position: absolute;
-            height: 1px;
-            width: 100px;
-            background: rgba(166, 176, 149, 0.2);
-            transform-origin: center;
-            z-index: -1;
-        }
-        
-        .line-1 {
-            top: 30%;
-            left: 5%;
-            transform: rotate(45deg);
-        }
-        
-        .line-2 {
-            bottom: 25%;
-            right: 8%;
-            transform: rotate(-30deg);
-        }
-        
-        @media (max-width: 768px) {
-            .video-container {
-                width: 95%;
-                padding-top: 56.25%; /* 恢复16:9比例 */
+    <title>万物生 - 禅意媒体展示</title>
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- 配置Tailwind自定义颜色和字体 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        zen: {
+                            light: '#f5f5f0',
+                            DEFAULT: '#e8e8e0',
+                            dark: '#8a8a82',
+                            darker: '#5c5c56'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Noto Sans SC', 'sans-serif'],
+                    },
+                }
             }
-            
-            .controls {
-                flex-wrap: wrap;
+        }
+    </script>
+    
+    <!-- 自定义工具类 -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
             }
-            
-            .zen-circle,
-            .zen-circle-2 {
-                display: none;
+            .zen-shadow {
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            }
+            .transition-smooth {
+                transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
             }
         }
     </style>
+    
+    <style>
+        /* 基础样式 */
+        body {
+            background-color: #f5f5f0;
+            background-image: 
+                linear-gradient(rgba(220, 220, 210, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(220, 220, 210, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        /* 加载动画 */
+        .loader {
+            width: 24px;
+            height: 24px;
+            border: 2px solid rgba(92, 92, 86, 0.2);
+            border-bottom-color: #5c5c56;
+            border-radius: 50%;
+            animation: rotation 1s linear infinite;
+        }
+        
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
-<body>
-    <!-- 禅意装饰元素 -->
-    <div class="zen-circle"></div>
-    <div class="zen-circle-2"></div>
-    <div class="zen-line line-1"></div>
-    <div class="zen-line line-2"></div>
+<body class="min-h-screen font-sans text-zen-darker flex flex-col items-center justify-start p-4 md:p-6">
+    <!-- 页面标题 -->
+    <header class="my-4 md:my-6 text-center">
+        <h1 class="text-[clamp(1.3rem,2.5vw,2rem)] font-light tracking-wider text-zen-darker">
+            万物生
+        </h1>
+        <div class="w-16 h-px bg-zen-dark/30 mx-auto mt-2"></div>
+    </header>
     
-    <!-- 视频容器 -->
-    <div class="video-container">
-        <video id="myVideo" controls autoplay muted>
-            <source src="show.mp4" type="video/mp4">
-            您的浏览器不支持HTML5视频播放。
-        </video>
-    </div>
+    <!-- 主内容区 - 紧凑布局确保单页显示 -->
+    <main class="w-full max-w-4xl flex flex-col gap-4 md:gap-6 flex-grow">
+        <!-- 图片展示区 -->
+        <section class="relative rounded-lg overflow-hidden zen-shadow bg-white/50 p-1 transition-smooth hover:shadow-lg flex-grow">
+            <div class="aspect-[16/9] md:aspect-[4/3] relative overflow-hidden">
+                <!-- 加载状态 -->
+                <div id="imageLoader" class="absolute inset-0 flex items-center justify-center">
+                    <div class="loader"></div>
+                </div>
+                
+                <!-- 图片 -->
+                <img 
+                    src="page1.png" 
+                    alt="万物生主题图片" 
+                    class="w-full h-full object-contain opacity-0 transition-smooth"
+                    onload="document.getElementById('imageLoader').classList.add('hidden'); this.classList.add('opacity-100')"
+                >
+                
+                <!-- 图片加载失败提示 -->
+                <div id="imageError" class="absolute inset-0 flex items-center justify-center hidden">
+                    <p class="text-zen-dark flex items-center gap-2">
+                        <i class="fa fa-image"></i> 图片加载失败
+                    </p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 视频展示区 -->
+        <section class="relative rounded-lg overflow-hidden zen-shadow bg-white/50 p-1 transition-smooth hover:shadow-lg flex-grow">
+            <div class="aspect-video relative overflow-hidden">
+                <!-- 加载状态 -->
+                <div id="videoLoader" class="absolute inset-0 flex items-center justify-center bg-white/30">
+                    <div class="loader"></div>
+                </div>
+                
+                <!-- 视频 -->
+                <video 
+                    src="show.mp4" 
+                    controls 
+                    poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 225' bg='%23f5f5f0'%3E%3Crect width='400' height='225' fill='%23f5f5f0'/%3E%3C/svg%3E"
+                    class="w-full h-full object-contain opacity-0 transition-smooth"
+                    onloadeddata="document.getElementById('videoLoader').classList.add('hidden'); this.classList.add('opacity-100')"
+                    onError="document.getElementById('videoLoader').classList.add('hidden'); document.getElementById('videoError').classList.remove('hidden')"
+                >
+                    您的浏览器不支持视频播放
+                </video>
+                
+                <!-- 视频加载失败提示 -->
+                <div id="videoError" class="absolute inset-0 flex items-center justify-center hidden bg-white/30">
+                    <p class="text-zen-dark flex items-center gap-2">
+                        <i class="fa fa-film"></i> 视频加载失败
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
     
-    <!-- 控制按钮 -->
-    <div class="controls">
-        <button onclick="playVideo()">播放</button>
-        <button onclick="pauseVideo()">暂停</button>
-        <button onclick="toggleMute()">静音/取消静音</button>
-        <button onclick="toggleFullScreen()">全屏</button>
-    </div>
-
+    <!-- 精简页脚 -->
+    <footer class="mt-4 md:mt-6 text-center text-zen-dark/60 text-xs">
+        <p>万物生 © 2023</p>
+    </footer>
+    
     <script>
-        const video = document.getElementById('myVideo');
-        
-        function playVideo() {
-            video.play();
-        }
-        
-        function pauseVideo() {
-            video.pause();
-        }
-        
-        function toggleMute() {
-            video.muted = !video.muted;
-        }
-        
-        function toggleFullScreen() {
-            if (video.requestFullscreen) {
-                video.requestFullscreen();
-            } else if (video.webkitRequestFullscreen) {
-                video.webkitRequestFullscreen();
-            } else if (video.msRequestFullscreen) {
-                video.msRequestFullscreen();
-            }
-        }
-        
-        // 添加简单的淡入效果
-        document.addEventListener('DOMContentLoaded', function() {
-            document.body.style.opacity = 0;
-            document.body.style.transition = 'opacity 1.5s ease-in';
-            
-            setTimeout(function() {
-                document.body.style.opacity = 1;
-            }, 100);
+        // 错误处理 - 如果图片加载失败
+        document.querySelector('img').addEventListener('error', function() {
+            document.getElementById('imageLoader').classList.add('hidden');
+            document.getElementById('imageError').classList.remove('hidden');
         });
     </script>
 </body>
